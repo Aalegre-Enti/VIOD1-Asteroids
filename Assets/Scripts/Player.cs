@@ -10,13 +10,14 @@ public class Player : MonoBehaviour
     public GameObject bala;
     public GameObject particulasMuerte;
     Animator anim;
-
     Collider2D coll;
+    SpriteRenderer sprite;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         coll = GetComponent<Collider2D>();
+        sprite = GetComponent<SpriteRenderer>();
     }
     void Update()
     {
@@ -44,16 +45,25 @@ public class Player : MonoBehaviour
         GameObject temp = Instantiate(particulasMuerte, transform.position, transform.rotation);
         Destroy(temp, 3);
 
-        StartCoroutine(Respawn_Corutine());
+        GameManager.instance.life--;
+        if(GameManager.instance.life > 0)
+        {
+            StartCoroutine(Respawn_Corutine());
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     IEnumerator Respawn_Corutine()
     {
-        GameManager.instance.life--;
+        sprite.color = new Color(1, 1, 1, .5f);
         transform.position = Vector3.zero;
         rb.velocity = Vector3.zero;
         coll.enabled = false;
         yield return new WaitForSeconds(3);
+        sprite.color = Color.white;
         coll.enabled = true;
     }
 }
